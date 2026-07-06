@@ -6,6 +6,7 @@ import com.example.activityclock.data.ActivityLog
 import com.example.activityclock.data.ActivityRepository
 import com.example.activityclock.data.ActivityStats
 import com.example.activityclock.data.ActivityType
+import com.example.activityclock.data.SettingsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class ClockViewModel(private val repository: ActivityRepository) : ViewModel() {
+class ClockViewModel(
+    private val repository: ActivityRepository,
+    private val settings: SettingsRepository
+) : ViewModel() {
 
     // List of all activity types
     private val _activities = MutableStateFlow<List<ActivityType>>(emptyList())
@@ -39,6 +43,9 @@ class ClockViewModel(private val repository: ActivityRepository) : ViewModel() {
     // Selected stats filter: 0 = Today, 1 = Week, 2 = Month, 3 = All-time
     private val _selectedFilter = MutableStateFlow(0)
     val selectedFilter: StateFlow<Int> = _selectedFilter.asStateFlow()
+
+    // Expose 24-hour setting for UI formatting
+    val is24HourFormat: StateFlow<Boolean> = settings.is24HourFormat
 
     private var timerJob: Job? = null
 
@@ -92,6 +99,21 @@ class ClockViewModel(private val repository: ActivityRepository) : ViewModel() {
             val (start, end) = getFilterTimeRange(_selectedFilter.value)
             _stats.value = repository.getStatsForPeriod(start, end)
         }
+    }
+
+    suspend fun generateCsvExport(): String {
+        val allLogs = repository.getRecentLogs(Int.MAX_VALUE)
+        val sb = java.lang.StringBuilder()
+        sb.append("Activity Name,Start Time,End Time,Duration (Seconds)\n")
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+        allLogs.forEach { log ->
+            val start = sdf.format(java.util.Date(log.startTimeMs))
+            val end = if (log.endTimeMs != null) sdf.format(java.util.Date(log.endTimeMs)) else "Ongoing"
+            // Escape activity name to avoid CSV breaking on commas
+            val escapedName = if (log.activityName.contains(",")) "\"${log.activityName}\"" else log.activityName
+            sb.append("${escapedName},${start},${end},${log.durationSeconds}\n")
+        }
+        return sb.toString()
     }
 
     fun setFilter(filterType: Int) {
@@ -157,8 +179,14 @@ class ClockViewModel(private val repository: ActivityRepository) : ViewModel() {
                 calendar.set(Calendar.MILLISECOND, 0)
                 Pair(calendar.timeInMillis, nowMs)
             }
-            1 -> { // Week (last 7 days)
-                calendar.add(Calendar.DAY_OF_YEAR, -7)
+            1 -> { // Week (start of current week)
+                val isMondayFirst = settings.isMondayFirst.value
+                calendar.firstDayOfWeek = if (isMondayFirst) Calendar.MONDAY else Calendar.SUNDAY
+                calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
+                calendar.set(Calendar.HOUR_OF_DAY, 0)
+                calendar.set(Calendar.MINUTE, 0)
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
                 Pair(calendar.timeInMillis, nowMs)
             }
             2 -> { // Month (last 30 days)

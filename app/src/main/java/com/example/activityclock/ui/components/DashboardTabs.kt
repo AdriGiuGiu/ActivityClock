@@ -79,8 +79,9 @@ fun Long.formatSecondsToClock(): String {
 }
 
 // Helper to format timestamps to readable hours
-fun Long.formatTimestampToTime(): String {
-    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+fun Long.formatTimestampToTime(is24Hour: Boolean): String {
+    val pattern = if (is24Hour) "HH:mm" else "hh:mm a"
+    val sdf = SimpleDateFormat(pattern, Locale.getDefault())
     return sdf.format(Date(this))
 }
 
@@ -274,6 +275,7 @@ fun AnalyticsTab(
     val stats by viewModel.stats.collectAsState()
     val filterType by viewModel.selectedFilter.collectAsState()
     val recentLogs by viewModel.recentLogs.collectAsState()
+    val is24Hour by viewModel.is24HourFormat.collectAsState()
 
     val filters = listOf("Today", "Week", "Month", "All")
 
@@ -398,14 +400,14 @@ fun AnalyticsTab(
             }
         } else {
             items(recentLogs, key = { it.id }) { log ->
-                TimelineItem(log = log)
+                TimelineItem(log = log, is24Hour = is24Hour)
             }
         }
     }
 }
 
 @Composable
-fun TimelineItem(log: ActivityLog) {
+fun TimelineItem(log: ActivityLog, is24Hour: Boolean) {
     val color = log.activityColorHex.toColor()
     val isRunning = log.endTimeMs == null
 
@@ -421,13 +423,13 @@ fun TimelineItem(log: ActivityLog) {
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = log.startTimeMs.formatTimestampToTime(),
+                text = log.startTimeMs.formatTimestampToTime(is24Hour),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = if (isRunning) "Now" else log.endTimeMs!!.formatTimestampToTime(),
+                text = if (isRunning) "Now" else log.endTimeMs!!.formatTimestampToTime(is24Hour),
                 color = if (isRunning) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
                 fontWeight = if (isRunning) FontWeight.Bold else FontWeight.Normal

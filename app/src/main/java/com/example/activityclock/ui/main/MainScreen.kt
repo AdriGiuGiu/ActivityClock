@@ -46,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import com.example.activityclock.Settings
 import com.example.activityclock.data.ActivityRepository
+import com.example.activityclock.data.SettingsRepository
 import com.example.activityclock.ui.components.ActivitiesTab
 import com.example.activityclock.ui.components.AnalyticsTab
 import com.example.activityclock.ui.components.ClockTab
@@ -59,7 +60,10 @@ fun MainScreen(
 ) {
     val context = LocalContext.current
     val clockViewModel: ClockViewModel = viewModel {
-        ClockViewModel(ActivityRepository(context.applicationContext))
+        ClockViewModel(
+            ActivityRepository(context.applicationContext),
+            SettingsRepository(context.applicationContext)
+        )
     }
 
     // Refresh stats and logs when this screen is active or tab is switched
