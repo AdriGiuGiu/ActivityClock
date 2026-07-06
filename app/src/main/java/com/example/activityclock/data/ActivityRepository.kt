@@ -158,21 +158,18 @@ class ActivityRepository(context: Context) {
         val query = """
             SELECT a.${DatabaseHelper.COL_ACT_ID}, a.${DatabaseHelper.COL_ACT_NAME}, a.${DatabaseHelper.COL_ACT_COLOR},
                    SUM(
-                       MAX(0, MIN(IFNULL(l.${DatabaseHelper.COL_LOG_END_TIME}, ?), ?) - MAX(l.${DatabaseHelper.COL_LOG_START_TIME}, ?))
+                       MAX(0, MIN(IFNULL(l.${DatabaseHelper.COL_LOG_END_TIME}, $now), $endTimeMs) - MAX(l.${DatabaseHelper.COL_LOG_START_TIME}, $startTimeMs))
                    ) / 1000 AS duration_sec
             FROM ${DatabaseHelper.TABLE_LOGS} l
             INNER JOIN ${DatabaseHelper.TABLE_ACTIVITIES} a ON l.${DatabaseHelper.COL_LOG_ACT_ID} = a.${DatabaseHelper.COL_ACT_ID}
-            WHERE l.${DatabaseHelper.COL_LOG_START_TIME} < ? 
-              AND (l.${DatabaseHelper.COL_LOG_END_TIME} IS NULL OR l.${DatabaseHelper.COL_LOG_END_TIME} > ?)
+            WHERE l.${DatabaseHelper.COL_LOG_START_TIME} < $endTimeMs 
+              AND (l.${DatabaseHelper.COL_LOG_END_TIME} IS NULL OR l.${DatabaseHelper.COL_LOG_END_TIME} > $startTimeMs)
             GROUP BY a.${DatabaseHelper.COL_ACT_ID}, a.${DatabaseHelper.COL_ACT_NAME}, a.${DatabaseHelper.COL_ACT_COLOR}
             HAVING duration_sec > 0
             ORDER BY duration_sec DESC
         """.trimIndent()
 
-        val cursor = db.rawQuery(
-            query, 
-            arrayOf(now.toString(), endTimeMs.toString(), startTimeMs.toString(), endTimeMs.toString(), startTimeMs.toString())
-        )
+        val cursor = db.rawQuery(query, null)
         
         val statsList = mutableListOf<ActivityStats>()
         var totalSec = 0L

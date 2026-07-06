@@ -55,6 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -111,7 +112,7 @@ fun ClockTab(
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            (activeLog?.activityColorHex?.toColor() ?: Color.Gray).copy(alpha = 0.15f),
+                            (activeLog?.activityColorHex?.toColor() ?: MaterialTheme.colorScheme.onSurfaceVariant).copy(alpha = 0.15f),
                             Color.Transparent
                         )
                     )
@@ -127,7 +128,7 @@ fun ClockTab(
                                     activeLog!!.activityColorHex.toColor()
                                 )
                             } else {
-                                listOf(Color.Gray, Color.Gray.copy(alpha = 0.3f), Color.Gray)
+                                listOf(MaterialTheme.colorScheme.onSurfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f), MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         )
                     ),
@@ -141,7 +142,7 @@ fun ClockTab(
             ) {
                 Text(
                     text = if (activeLog != null) "TRACKING" else "IDLE",
-                    color = if (activeLog != null) activeLog!!.activityColorHex.toColor() else Color.Gray,
+                    color = if (activeLog != null) activeLog!!.activityColorHex.toColor() else MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 2.sp
@@ -149,7 +150,7 @@ fun ClockTab(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = elapsedSeconds.formatSecondsToClock(),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 38.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace
@@ -157,7 +158,7 @@ fun ClockTab(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = activeLog?.activityName ?: "No Active Activity",
-                    color = if (activeLog != null) Color.White else Color.Gray,
+                    color = if (activeLog != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -178,7 +179,7 @@ fun ClockTab(
             ) {
                 Text(
                     text = "Stop Session",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
@@ -198,7 +199,7 @@ fun ClockTab(
         // Header
         Text(
             text = "Switch Activity",
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -254,7 +255,7 @@ fun ClockTab(
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = activity.name,
-                            color = if (isActive) Color.White else MaterialTheme.colorScheme.onSurface,
+                            color = if (isActive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface,
                             fontSize = 14.sp,
                             fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium
                         )
@@ -308,7 +309,7 @@ fun AnalyticsTab(
                         ) {
                             Text(
                                 text = label,
-                                color = if (isSelected) Color.Black else Color.White,
+                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -333,7 +334,7 @@ fun AnalyticsTab(
                 ) {
                     Text(
                         text = "Time Distribution",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.fillMaxWidth()
@@ -361,7 +362,7 @@ fun AnalyticsTab(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "Ranking Breakdown",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.fillMaxWidth()
@@ -379,7 +380,7 @@ fun AnalyticsTab(
         item {
             Text(
                 text = "Recent Timeline",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 12.dp)
@@ -421,7 +422,7 @@ fun TimelineItem(log: ActivityLog) {
         ) {
             Text(
                 text = log.startTimeMs.formatTimestampToTime(),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -464,7 +465,7 @@ fun TimelineItem(log: ActivityLog) {
                 Column {
                     Text(
                         text = log.activityName,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -477,7 +478,7 @@ fun TimelineItem(log: ActivityLog) {
 
                 Text(
                     text = if (isRunning) "Active..." else log.durationSeconds.formatSecondsToDuration(),
-                    color = if (isRunning) MaterialTheme.colorScheme.primary else Color.White,
+                    color = if (isRunning) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -502,7 +503,7 @@ fun ActivitiesTab(
             item {
                 Text(
                     text = "Activity Types",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 12.dp)
@@ -535,13 +536,13 @@ fun ActivitiesTab(
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = activity.name,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         IconButton(onClick = { showDeleteConfirm = true }) {
-                            Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = Color.Gray)
+                            Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -561,8 +562,8 @@ fun ActivitiesTab(
                             TextButton(onClick = { showDeleteConfirm = false }) { Text("Cancel") }
                         },
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        titleContentColor = Color.White,
-                        textContentColor = Color.White
+                        titleContentColor = MaterialTheme.colorScheme.onSurface,
+                        textContentColor = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -572,7 +573,7 @@ fun ActivitiesTab(
         FloatingActionButton(
             onClick = { showAddDialog = true },
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = Color.Black,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
             shape = CircleShape,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -606,7 +607,7 @@ fun AddActivityDialog(
     val usedColors = remember(activities) { activities.map { it.colorHex.uppercase() } }
     val availableColors = remember(usedColors) {
         val filtered = ActivityColors.filter { color -> 
-            val hex = String.format("#%06X", (0xFFFFFF and color.value.toLong().toInt()))
+            val hex = String.format("#%06X", (0xFFFFFF and color.toArgb()))
             hex !in usedColors
         }
         filtered.ifEmpty { ActivityColors }
@@ -628,7 +629,7 @@ fun AddActivityDialog(
             ) {
                 Text(
                     text = "New Activity Type",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -641,12 +642,12 @@ fun AddActivityDialog(
                     label = { Text("Activity Name") },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedLabelColor = MaterialTheme.colorScheme.primary,
-                        unfocusedLabelColor = Color.Gray
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -655,7 +656,7 @@ fun AddActivityDialog(
 
                 Text(
                     text = "Select Color Accent",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.align(Alignment.Start)
@@ -681,7 +682,7 @@ fun AddActivityDialog(
                                 .background(color)
                                 .border(
                                     width = 2.dp,
-                                    color = if (isSelected) Color.White else Color.Transparent,
+                                    color = if (isSelected) MaterialTheme.colorScheme.onSurface else Color.Transparent,
                                     shape = CircleShape
                                 )
                                 .clickable { selectedColor = color },
@@ -691,7 +692,7 @@ fun AddActivityDialog(
                                 Icon(
                                     imageVector = Icons.Filled.Check,
                                     contentDescription = "Selected",
-                                    tint = Color.Black,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -706,21 +707,21 @@ fun AddActivityDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text(text = "Cancel", color = Color.Gray)
+                        Text(text = "Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Button(
                         onClick = {
                             if (name.isNotBlank()) {
                                 // Convert Color to Hex String format e.g., "#FF0000"
-                                val hex = String.format("#%06X", (0xFFFFFF and selectedColor.value.toLong().toInt()))
+                                val hex = String.format("#%06X", (0xFFFFFF and selectedColor.toArgb()))
                                 onConfirm(name.trim(), hex)
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         enabled = name.isNotBlank()
                     ) {
-                        Text(text = "Create", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text(text = "Create", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
                     }
                 }
             }

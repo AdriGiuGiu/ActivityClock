@@ -57,6 +57,7 @@ fun DonutChart(
     modifier: Modifier = Modifier
 ) {
     val totalSeconds = statsList.sumOf { it.totalDurationSeconds }
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
     Box(
         modifier = modifier,
@@ -66,7 +67,7 @@ fun DonutChart(
             // Empty State
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawCircle(
-                    color = Color(0xFF222228),
+                    color = surfaceVariantColor,
                     radius = size.minDimension / 2 - 20.dp.toPx(),
                     style = Stroke(width = 30.dp.toPx())
                 )
@@ -120,7 +121,7 @@ fun DonutChart(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = totalSeconds.formatSecondsToDuration(),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
@@ -150,6 +151,7 @@ fun BarChart(
     }
 
     val maxDuration = statsList.maxOf { it.totalDurationSeconds }.toFloat()
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
     Column(modifier = modifier) {
         statsList.take(6).forEach { stat ->
@@ -175,7 +177,7 @@ fun BarChart(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = stat.activityName,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -197,7 +199,7 @@ fun BarChart(
                 ) {
                     // Background bar track
                     drawRoundRect(
-                        color = Color(0xFF1E1E24),
+                        color = surfaceVariantColor,
                         size = size,
                         cornerRadius = androidx.compose.ui.geometry.CornerRadius(6.dp.toPx())
                     )
