@@ -18,6 +18,13 @@ This project is built using modern Android development practices:
 - **Concurrency:** Kotlin Coroutines & Flow for asynchronous data streams
 - **Database:** Local SQLite with optimized aggregation queries
 
+## Installation
+
+You can install the app directly on your Android device:
+1. Download the [`ActivityClock.apk`](ActivityClock.apk) file from this repository.
+2. Transfer it to your Android device (or open GitHub on your phone and download it).
+3. Tap the file to install it. *(You may need to enable "Install from unknown sources" in your Android settings)*.
+
 ## Running the Project
 
 1. Clone this repository.
