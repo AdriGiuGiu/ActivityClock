@@ -196,4 +196,23 @@ class ActivityRepository(context: Context) {
             statsList
         }
     }
+
+    suspend fun deleteActivity(activityId: Int): Unit = withContext(Dispatchers.IO) {
+        val db = dbHelper.writableDatabase
+        db.delete(
+            DatabaseHelper.TABLE_ACTIVITIES,
+            "${DatabaseHelper.COL_ACT_ID} = ?",
+            arrayOf(activityId.toString())
+        )
+    }
+
+    suspend fun clearAllLogs(): Unit = withContext(Dispatchers.IO) {
+        val db = dbHelper.writableDatabase
+        db.delete(DatabaseHelper.TABLE_LOGS, null, null)
+    }
+
+    suspend fun clearAllActivities(): Unit = withContext(Dispatchers.IO) {
+        val db = dbHelper.writableDatabase
+        db.delete(DatabaseHelper.TABLE_ACTIVITIES, null, null)
+    }
 }

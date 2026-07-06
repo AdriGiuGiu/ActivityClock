@@ -175,4 +175,25 @@ class ClockViewModel(private val repository: ActivityRepository) : ViewModel() {
         super.onCleared()
         stopTimer()
     }
+
+    fun deleteActivity(activityId: Int) {
+        viewModelScope.launch {
+            repository.deleteActivity(activityId)
+            refreshAll()
+        }
+    }
+
+    fun clearAllLogs() {
+        viewModelScope.launch {
+            repository.clearAllLogs()
+            refreshAll()
+        }
+    }
+
+    fun clearAllActivities() {
+        viewModelScope.launch {
+            repository.clearAllActivities()
+            refreshAll()
+        }
+    }
 }

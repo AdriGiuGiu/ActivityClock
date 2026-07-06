@@ -27,7 +27,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,6 +37,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -508,6 +511,8 @@ fun ActivitiesTab(
 
             items(activities, key = { it.id }) { activity ->
                 val color = activity.colorHex.toColor()
+                var showDeleteConfirm by remember { mutableStateOf(false) }
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -518,7 +523,7 @@ fun ActivitiesTab(
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
@@ -534,7 +539,31 @@ fun ActivitiesTab(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
+                        Spacer(modifier = Modifier.weight(1f))
+                        IconButton(onClick = { showDeleteConfirm = true }) {
+                            Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = Color.Gray)
+                        }
                     }
+                }
+                
+                if (showDeleteConfirm) {
+                    AlertDialog(
+                        onDismissRequest = { showDeleteConfirm = false },
+                        title = { Text("Delete Activity?") },
+                        text = { Text("Are you sure you want to delete '${activity.name}'? All history will be lost.") },
+                        confirmButton = {
+                            TextButton(onClick = { 
+                                viewModel.deleteActivity(activity.id)
+                                showDeleteConfirm = false 
+                            }) { Text("Delete", color = Color.Red) }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDeleteConfirm = false }) { Text("Cancel") }
+                        },
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        titleContentColor = Color.White,
+                        textContentColor = Color.White
+                    )
                 }
             }
         }
@@ -554,6 +583,7 @@ fun ActivitiesTab(
 
         if (showAddDialog) {
             AddActivityDialog(
+                activities = activities,
                 onDismiss = { showAddDialog = false },
                 onConfirm = { name, colorHex ->
                     viewModel.addNewActivity(name, colorHex)
@@ -567,11 +597,22 @@ fun ActivitiesTab(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddActivityDialog(
+    activities: List<ActivityType>,
     onDismiss: () -> Unit,
     onConfirm: (String, String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf(ActivityColors.first()) }
+    
+    val usedColors = remember(activities) { activities.map { it.colorHex.uppercase() } }
+    val availableColors = remember(usedColors) {
+        val filtered = ActivityColors.filter { color -> 
+            val hex = String.format("#%06X", (0xFFFFFF and color.value.toLong().toInt()))
+            hex !in usedColors
+        }
+        filtered.ifEmpty { ActivityColors }
+    }
+
+    var selectedColor by remember(availableColors) { mutableStateOf(availableColors.first()) }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -627,11 +668,11 @@ fun AddActivityDialog(
                     columns = GridCells.Fixed(5),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp),
+                        .height(140.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(ActivityColors) { color ->
+                    items(availableColors) { color ->
                         val isSelected = selectedColor == color
                         Box(
                             modifier = Modifier
