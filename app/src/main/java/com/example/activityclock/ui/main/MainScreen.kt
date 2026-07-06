@@ -62,7 +62,7 @@ fun MainScreen(
     val clockViewModel: ClockViewModel = viewModel {
         ClockViewModel(
             ActivityRepository(context.applicationContext),
-            SettingsRepository(context.applicationContext)
+            SettingsRepository.getInstance(context.applicationContext)
         )
     }
 

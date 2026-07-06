@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val settingsRepo = remember { SettingsRepository(context) }
+    val settingsRepo = remember { SettingsRepository.getInstance(context) }
     
     val isDarkTheme by settingsRepo.isDarkTheme.collectAsState()
     val is24Hour by settingsRepo.is24HourFormat.collectAsState()
@@ -40,7 +40,7 @@ fun SettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val clockViewModel: ClockViewModel = viewModel {
         ClockViewModel(
             ActivityRepository(context.applicationContext),
-            SettingsRepository(context.applicationContext)
+            SettingsRepository.getInstance(context.applicationContext)
         )
     }
 
@@ -128,7 +128,7 @@ fun SettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     ) {
                         Column {
                             Text("24-Hour Time", fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
-                            Text("Use 24-hour format in timeline", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("On: 14:30, Off: 2:30 PM", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Switch(
                             checked = is24Hour,
@@ -152,7 +152,10 @@ fun SettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                         }
                         Switch(
                             checked = isMondayFirst,
-                            onCheckedChange = { settingsRepo.setMondayFirst(it) }
+                            onCheckedChange = { 
+                                settingsRepo.setMondayFirst(it) 
+                                clockViewModel.loadStats()
+                            }
                         )
                     }
                 }

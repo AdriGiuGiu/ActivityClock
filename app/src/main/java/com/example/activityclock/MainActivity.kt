@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
 
     enableEdgeToEdge()
     setContent {
-      val settingsRepo = remember { SettingsRepository(applicationContext) }
+      val settingsRepo = remember { SettingsRepository.getInstance(applicationContext) }
       val isDarkTheme by settingsRepo.isDarkTheme.collectAsState()
 
       ActivityClockTheme(darkTheme = isDarkTheme) { 

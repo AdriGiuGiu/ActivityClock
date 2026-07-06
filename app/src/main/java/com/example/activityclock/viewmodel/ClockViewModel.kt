@@ -104,14 +104,17 @@ class ClockViewModel(
     suspend fun generateCsvExport(): String {
         val allLogs = repository.getRecentLogs(Int.MAX_VALUE)
         val sb = java.lang.StringBuilder()
-        sb.append("Activity Name,Start Time,End Time,Duration (Seconds)\n")
-        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+        sb.append("Activity Name,Start Date,Start Time,End Date,End Time,Duration (Seconds)\n")
+        val dateFmt = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        val timeFmt = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault())
         allLogs.forEach { log ->
-            val start = sdf.format(java.util.Date(log.startTimeMs))
-            val end = if (log.endTimeMs != null) sdf.format(java.util.Date(log.endTimeMs)) else "Ongoing"
+            val startD = dateFmt.format(java.util.Date(log.startTimeMs))
+            val startT = timeFmt.format(java.util.Date(log.startTimeMs))
+            val endD = if (log.endTimeMs != null) dateFmt.format(java.util.Date(log.endTimeMs)) else "Ongoing"
+            val endT = if (log.endTimeMs != null) timeFmt.format(java.util.Date(log.endTimeMs)) else ""
             // Escape activity name to avoid CSV breaking on commas
             val escapedName = if (log.activityName.contains(",")) "\"${log.activityName}\"" else log.activityName
-            sb.append("${escapedName},${start},${end},${log.durationSeconds}\n")
+            sb.append("${escapedName},${startD},${startT},${endD},${endT},${log.durationSeconds}\n")
         }
         return sb.toString()
     }

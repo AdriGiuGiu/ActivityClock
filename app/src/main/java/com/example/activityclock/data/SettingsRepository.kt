@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class SettingsRepository(context: Context) {
+class SettingsRepository private constructor(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("activity_clock_settings", Context.MODE_PRIVATE)
 
     private val _isDarkTheme = MutableStateFlow(prefs.getBoolean("is_dark_theme", true))
@@ -31,5 +31,16 @@ class SettingsRepository(context: Context) {
     fun setMondayFirst(isMonday: Boolean) {
         prefs.edit().putBoolean("is_monday_first", isMonday).apply()
         _isMondayFirst.value = isMonday
+    }
+
+    companion object {
+        @Volatile
+        private var INSTANCE: SettingsRepository? = null
+
+        fun getInstance(context: Context): SettingsRepository {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: SettingsRepository(context.applicationContext).also { INSTANCE = it }
+            }
+        }
     }
 }
